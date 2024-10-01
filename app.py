@@ -69,12 +69,11 @@ def generate_subtasks(task_id):
     task = Task.query.get(task_id)
     if task:
         prompt = f"Generate subtasks for the following task: {task.title}. Only return the subtasks and nothing else."
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=150
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}]
         )
-        subtasks = response.choices[0].text.strip()
+        subtasks = response.choices[0].message.content.strip()
         task.description += f"\n\nSubtasks:\n{subtasks}"
         db.session.commit()
     return redirect(url_for('index'))
