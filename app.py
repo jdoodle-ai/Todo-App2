@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import openai
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -56,6 +57,27 @@ def complete_task(task_id):
     task = Task.query.get(task_id)
     if task:
         task.completed = not task.completed  # Toggle the completed status
+        db.session.commit()
+    return redirect(url_for('index'))
+
+
+
+
+
+@app.route('/generate_subtasks/<int:task_id>', methods=['POST'])
+def generate_subtasks(task_id):
+    task = Task.query.get(task_id)
+    if task:
+        prompt = f"Generate subtasks for the following task: {task.title}
+
+Only return the subtasks and nothing else."
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=150
+        )
+        subtasks = response.choices[0].text.strip()
+        task.description += f"\n\nSubtasks:\n{subtasks}"
         db.session.commit()
     return redirect(url_for('index'))
 
