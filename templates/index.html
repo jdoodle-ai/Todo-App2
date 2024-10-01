@@ -63,7 +63,7 @@
                             <div class="textarea-wrapper">
                                 <textarea name="description" class="description-textarea" id="textarea-{{ task.id }}"
                                     oninput="autoResize(this);">{{ task.description }}</textarea>
-                                <button type="button" class="ai-button">
+                                <button type="button" class="ai-button" onclick="generateSubtasks({{ task.id }});">
                                     ✨
                                 </button>
                             </div>
@@ -103,6 +103,25 @@
                 autoResize(textarea);
             });
         });
+
+        async function generateSubtasks(taskId) {
+            const description = document.getElementById(`textarea-${taskId}`).value;
+            const response = await fetch(`/generate_subtasks/${taskId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description })
+            });
+            const subtasks = await response.json();
+            const subtasksDiv = document.getElementById(`subtasks-${taskId}`);
+            subtasksDiv.innerHTML = '';
+            subtasks.forEach(subtask => {
+                const subtaskItem = document.createElement('li');
+                subtaskItem.textContent = subtask.title;
+                subtasksDiv.appendChild(subtaskItem);
+            });
+        }
     </script>
 </body>
 
