@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import openai
 
 # Initialize the Flask app
 app = Flask(__name__)
@@ -15,6 +16,7 @@ class Task(db.Model):
     title = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False)
     description = db.Column(db.Text, default="")  # New field to store markdown text
+    subtasks = db.Column(db.Text, default="")  # New field to store subtasks
 
 
 # Route for the homepage
