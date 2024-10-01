@@ -68,9 +68,7 @@ def complete_task(task_id):
 def generate_subtasks(task_id):
     task = Task.query.get(task_id)
     if task:
-        prompt = f"Generate subtasks for the following task: {task.title}
-
-Only return the subtasks and nothing else."
+        prompt = f"Generate subtasks for the following task: {task.title}. Only return the subtasks and nothing else."
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
